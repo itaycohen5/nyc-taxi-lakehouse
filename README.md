@@ -58,3 +58,5 @@ The demo uses [Databricks’ built-in NYC taxi sample](https://docs.databricks.c
 The site under `docs/` reads a dated snapshot of the Gold aggregates and the four verified pipeline updates. To rebuild it, export the rows from [portfolio_export.sql](sql/portfolio_export.sql) as a JSON array and record the results of [verify.sql](sql/verify.sql) in JSON Lines using the fields in [snapshot.json](docs/snapshot.json). Then run `python scripts/build_snapshot.py hourly.json runs.jsonl --date YYYY-MM-DD` from the repository root.
 
 This project was built for Itay Cohen with assistance from Codex. The staging workflow, quarantine rules, reconciliation checks, and public dashboard were developed for this repository. The implementation uses the documented [Lakeflow Python API](https://docs.databricks.com/aws/en/ldp/developer/python-ref) and [Auto Loader](https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/auto-loader/).
+
+The portfolio site’s warm glass panels were inspired by [Glassy Dashboard UI V4 by MatrCode](https://www.youtube.com/shorts/h8v239q6mXs).
