@@ -6,7 +6,7 @@
   <meta name="description" content="Explore a verified Databricks pipeline for New York City taxi trips.">
   <title>NYC Taxi Lakehouse · Itay Cohen</title>
   <script src="theme.js?v=frost" defer></script>
-  <link rel="stylesheet" href="style.css?v=frost">
+  <link rel="stylesheet" href="style.css?v=glass-polish">
   <script src="app.js?v=frost" defer></script>
 </head>
 <body>
@@ -27,7 +27,15 @@
       <header class="fd-top">
         <span>Itay Cohen <span class="fd-top-detail">/ Data engineering</span></span>
         <div class="fd-actions">
-          <button id="theme-toggle" type="button" aria-pressed="true">Dark mode</button>
+          <button id="theme-toggle" class="fd-theme" type="button" aria-label="Dark mode" aria-pressed="true">
+            <span class="fd-theme-thumb" aria-hidden="true"></span>
+            <span class="fd-theme-icon fd-sun" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M19 5l-1.5 1.5m-11 11L5 19"/></svg>
+            </span>
+            <span class="fd-theme-icon fd-moon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M20.9 13.4A9 9 0 0 1 10.6 3.1a9 9 0 1 0 10.3 10.3Z"/></svg>
+            </span>
+          </button>
           <a href="https://github.com/itaycohen5/nyc-taxi-lakehouse">Source code ↗</a>
         </div>
       </header>
