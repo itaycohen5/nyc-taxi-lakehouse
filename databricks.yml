@@ -1,0 +1,39 @@
+bundle:
+  name: nyc-taxi-lakehouse
+
+variables:
+  catalog:
+    description: Writable Unity Catalog catalog used by the setup notebook
+  warehouse_id:
+    description: Serverless SQL warehouse used by the dashboard
+
+resources:
+  dashboards:
+    activity:
+      display_name: NYC Taxi | Trip Activity
+      file_path: ./sql/nyc_taxi.lvdash.json
+      warehouse_id: ${var.warehouse_id}
+      dataset_catalog: ${var.catalog}
+      dataset_schema: nyc_taxi
+  pipelines:
+    taxi:
+      name: NYC Taxi Lakehouse
+      catalog: ${var.catalog}
+      schema: nyc_taxi
+      serverless: true
+      continuous: false
+      configuration:
+        taxi.volume: /Volumes/${var.catalog}/nyc_taxi/landing
+        taxi.reference: ${var.catalog}.nyc_taxi.pickup_prefix_reference
+      libraries:
+        - file:
+            path: ./src/taxi_pipeline.py
+  jobs:
+    refresh:
+      name: NYC Taxi | Refresh
+      max_concurrent_runs: 1
+      tasks:
+        - task_key: refresh_taxi
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.taxi.id}
+            full_refresh: false

@@ -1,0 +1,51 @@
+{
+  "datasets": [
+    {
+      "name": "hourly_trips",
+      "displayName": "Hourly taxi trips by borough",
+      "queryLines": [
+        "SELECT pickup_hour, pickup_borough, SUM(trip_count) AS trip_count\n",
+        "FROM gold_hourly_activity\n",
+        "GROUP BY pickup_hour, pickup_borough"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "trip_activity",
+      "displayName": "Trip activity",
+      "layout": [
+        {
+          "widget": {
+            "name": "hourly_borough_chart",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "hourly_trips",
+                  "fields": [
+                    {"name": "pickup_hour", "expression": "`pickup_hour`"},
+                    {"name": "pickup_borough", "expression": "`pickup_borough`"},
+                    {"name": "trip_count", "expression": "SUM(`trip_count`)"}
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "frame": {"showTitle": true, "title": "Taxi trips by pickup hour and borough"},
+              "encodings": {
+                "x": {"fieldName": "pickup_hour", "displayName": "Pickup hour", "scale": {"type": "categorical"}},
+                "y": {"fieldName": "trip_count", "displayName": "Trips", "scale": {"type": "quantitative"}},
+                "color": {"fieldName": "pickup_borough", "displayName": "Pickup borough", "scale": {"type": "categorical"}}
+              }
+            }
+          },
+          "position": {"x": 0, "y": 0, "width": 6, "height": 6}
+        }
+      ]
+    }
+  ]
+}

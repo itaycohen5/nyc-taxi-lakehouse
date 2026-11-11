@@ -1,0 +1,503 @@
+{
+  "snapshotDate": "2026-11-11",
+  "runs": [
+    {
+      "phase": "first",
+      "bronze": 10000,
+      "silver": 9966,
+      "quarantine": 34,
+      "gold": 9966,
+      "files": 1,
+      "injected": 0
+    },
+    {
+      "phase": "second",
+      "bronze": 20000,
+      "silver": 19926,
+      "quarantine": 74,
+      "gold": 19926,
+      "files": 2,
+      "injected": 0
+    },
+    {
+      "phase": "no-op",
+      "bronze": 20000,
+      "silver": 19926,
+      "quarantine": 74,
+      "gold": 19926,
+      "files": 2,
+      "injected": 0
+    },
+    {
+      "phase": "invalid",
+      "bronze": 20001,
+      "silver": 19926,
+      "quarantine": 75,
+      "gold": 19926,
+      "files": 3,
+      "injected": 1
+    }
+  ],
+  "hourly": [
+    {
+      "hour": 0,
+      "borough": "Bronx",
+      "trips": 1
+    },
+    {
+      "hour": 0,
+      "borough": "Brooklyn",
+      "trips": 31
+    },
+    {
+      "hour": 0,
+      "borough": "Manhattan",
+      "trips": 589
+    },
+    {
+      "hour": 0,
+      "borough": "Queens",
+      "trips": 44
+    },
+    {
+      "hour": 1,
+      "borough": "Brooklyn",
+      "trips": 22
+    },
+    {
+      "hour": 1,
+      "borough": "Manhattan",
+      "trips": 452
+    },
+    {
+      "hour": 1,
+      "borough": "Queens",
+      "trips": 23
+    },
+    {
+      "hour": 1,
+      "borough": "Unknown",
+      "trips": 1
+    },
+    {
+      "hour": 2,
+      "borough": "Bronx",
+      "trips": 1
+    },
+    {
+      "hour": 2,
+      "borough": "Brooklyn",
+      "trips": 26
+    },
+    {
+      "hour": 2,
+      "borough": "Manhattan",
+      "trips": 339
+    },
+    {
+      "hour": 2,
+      "borough": "Queens",
+      "trips": 13
+    },
+    {
+      "hour": 3,
+      "borough": "Brooklyn",
+      "trips": 14
+    },
+    {
+      "hour": 3,
+      "borough": "Manhattan",
+      "trips": 224
+    },
+    {
+      "hour": 3,
+      "borough": "Queens",
+      "trips": 10
+    },
+    {
+      "hour": 3,
+      "borough": "Unknown",
+      "trips": 1
+    },
+    {
+      "hour": 4,
+      "borough": "Bronx",
+      "trips": 1
+    },
+    {
+      "hour": 4,
+      "borough": "Brooklyn",
+      "trips": 13
+    },
+    {
+      "hour": 4,
+      "borough": "Manhattan",
+      "trips": 183
+    },
+    {
+      "hour": 4,
+      "borough": "Queens",
+      "trips": 14
+    },
+    {
+      "hour": 5,
+      "borough": "Brooklyn",
+      "trips": 8
+    },
+    {
+      "hour": 5,
+      "borough": "Manhattan",
+      "trips": 175
+    },
+    {
+      "hour": 5,
+      "borough": "Queens",
+      "trips": 19
+    },
+    {
+      "hour": 6,
+      "borough": "Brooklyn",
+      "trips": 13
+    },
+    {
+      "hour": 6,
+      "borough": "Manhattan",
+      "trips": 413
+    },
+    {
+      "hour": 6,
+      "borough": "Queens",
+      "trips": 25
+    },
+    {
+      "hour": 7,
+      "borough": "Brooklyn",
+      "trips": 10
+    },
+    {
+      "hour": 7,
+      "borough": "Manhattan",
+      "trips": 710
+    },
+    {
+      "hour": 7,
+      "borough": "Queens",
+      "trips": 34
+    },
+    {
+      "hour": 8,
+      "borough": "Bronx",
+      "trips": 1
+    },
+    {
+      "hour": 8,
+      "borough": "Brooklyn",
+      "trips": 10
+    },
+    {
+      "hour": 8,
+      "borough": "Manhattan",
+      "trips": 905
+    },
+    {
+      "hour": 8,
+      "borough": "Queens",
+      "trips": 56
+    },
+    {
+      "hour": 8,
+      "borough": "Staten Island",
+      "trips": 1
+    },
+    {
+      "hour": 9,
+      "borough": "Brooklyn",
+      "trips": 15
+    },
+    {
+      "hour": 9,
+      "borough": "Manhattan",
+      "trips": 903
+    },
+    {
+      "hour": 9,
+      "borough": "Queens",
+      "trips": 46
+    },
+    {
+      "hour": 10,
+      "borough": "Brooklyn",
+      "trips": 10
+    },
+    {
+      "hour": 10,
+      "borough": "Manhattan",
+      "trips": 807
+    },
+    {
+      "hour": 10,
+      "borough": "Queens",
+      "trips": 56
+    },
+    {
+      "hour": 11,
+      "borough": "Bronx",
+      "trips": 1
+    },
+    {
+      "hour": 11,
+      "borough": "Brooklyn",
+      "trips": 12
+    },
+    {
+      "hour": 11,
+      "borough": "Manhattan",
+      "trips": 875
+    },
+    {
+      "hour": 11,
+      "borough": "Queens",
+      "trips": 35
+    },
+    {
+      "hour": 11,
+      "borough": "Unknown",
+      "trips": 1
+    },
+    {
+      "hour": 12,
+      "borough": "Bronx",
+      "trips": 1
+    },
+    {
+      "hour": 12,
+      "borough": "Brooklyn",
+      "trips": 5
+    },
+    {
+      "hour": 12,
+      "borough": "Manhattan",
+      "trips": 908
+    },
+    {
+      "hour": 12,
+      "borough": "Queens",
+      "trips": 42
+    },
+    {
+      "hour": 13,
+      "borough": "Brooklyn",
+      "trips": 6
+    },
+    {
+      "hour": 13,
+      "borough": "Manhattan",
+      "trips": 946
+    },
+    {
+      "hour": 13,
+      "borough": "Queens",
+      "trips": 46
+    },
+    {
+      "hour": 13,
+      "borough": "Unknown",
+      "trips": 1
+    },
+    {
+      "hour": 14,
+      "borough": "Brooklyn",
+      "trips": 13
+    },
+    {
+      "hour": 14,
+      "borough": "Manhattan",
+      "trips": 943
+    },
+    {
+      "hour": 14,
+      "borough": "Queens",
+      "trips": 51
+    },
+    {
+      "hour": 15,
+      "borough": "Bronx",
+      "trips": 1
+    },
+    {
+      "hour": 15,
+      "borough": "Brooklyn",
+      "trips": 9
+    },
+    {
+      "hour": 15,
+      "borough": "Manhattan",
+      "trips": 976
+    },
+    {
+      "hour": 15,
+      "borough": "Queens",
+      "trips": 81
+    },
+    {
+      "hour": 15,
+      "borough": "Unknown",
+      "trips": 1
+    },
+    {
+      "hour": 16,
+      "borough": "Brooklyn",
+      "trips": 9
+    },
+    {
+      "hour": 16,
+      "borough": "Manhattan",
+      "trips": 830
+    },
+    {
+      "hour": 16,
+      "borough": "Queens",
+      "trips": 47
+    },
+    {
+      "hour": 17,
+      "borough": "Bronx",
+      "trips": 2
+    },
+    {
+      "hour": 17,
+      "borough": "Brooklyn",
+      "trips": 11
+    },
+    {
+      "hour": 17,
+      "borough": "Manhattan",
+      "trips": 989
+    },
+    {
+      "hour": 17,
+      "borough": "Queens",
+      "trips": 68
+    },
+    {
+      "hour": 17,
+      "borough": "Unknown",
+      "trips": 1
+    },
+    {
+      "hour": 18,
+      "borough": "Brooklyn",
+      "trips": 23
+    },
+    {
+      "hour": 18,
+      "borough": "Manhattan",
+      "trips": 1248
+    },
+    {
+      "hour": 18,
+      "borough": "Queens",
+      "trips": 58
+    },
+    {
+      "hour": 18,
+      "borough": "Unknown",
+      "trips": 1
+    },
+    {
+      "hour": 19,
+      "borough": "Bronx",
+      "trips": 1
+    },
+    {
+      "hour": 19,
+      "borough": "Brooklyn",
+      "trips": 15
+    },
+    {
+      "hour": 19,
+      "borough": "Manhattan",
+      "trips": 1197
+    },
+    {
+      "hour": 19,
+      "borough": "Queens",
+      "trips": 67
+    },
+    {
+      "hour": 19,
+      "borough": "Unknown",
+      "trips": 1
+    },
+    {
+      "hour": 20,
+      "borough": "Brooklyn",
+      "trips": 17
+    },
+    {
+      "hour": 20,
+      "borough": "Manhattan",
+      "trips": 1081
+    },
+    {
+      "hour": 20,
+      "borough": "Queens",
+      "trips": 59
+    },
+    {
+      "hour": 21,
+      "borough": "Brooklyn",
+      "trips": 21
+    },
+    {
+      "hour": 21,
+      "borough": "Manhattan",
+      "trips": 1029
+    },
+    {
+      "hour": 21,
+      "borough": "Queens",
+      "trips": 55
+    },
+    {
+      "hour": 22,
+      "borough": "Brooklyn",
+      "trips": 24
+    },
+    {
+      "hour": 22,
+      "borough": "Manhattan",
+      "trips": 977
+    },
+    {
+      "hour": 22,
+      "borough": "Queens",
+      "trips": 75
+    },
+    {
+      "hour": 22,
+      "borough": "Unknown",
+      "trips": 1
+    },
+    {
+      "hour": 23,
+      "borough": "Bronx",
+      "trips": 2
+    },
+    {
+      "hour": 23,
+      "borough": "Brooklyn",
+      "trips": 30
+    },
+    {
+      "hour": 23,
+      "borough": "Manhattan",
+      "trips": 749
+    },
+    {
+      "hour": 23,
+      "borough": "Queens",
+      "trips": 65
+    }
+  ]
+}

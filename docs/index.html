@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore a verified Databricks pipeline for New York City taxi trips.">
+  <title>NYC Taxi Lakehouse · Itay Cohen</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="top">
+    <nav class="wrap" aria-label="Main navigation">
+      <a class="brand" href="./"><span class="signal" aria-hidden="true"></span> NYC Taxi Lakehouse</a>
+      <div class="links"><a href="#pipeline">Pipeline</a><a href="#verification">Run history</a><a class="source" href="https://github.com/itaycohen5/nyc-taxi-lakehouse">Source code ↗</a></div>
+    </nav>
+  </header>
+  <main class="wrap">
+    <section class="intro" aria-labelledby="title">
+      <p class="byline">ITAY COHEN / DATA ENGINEERING PORTFOLIO</p>
+      <h1 id="title">NYC Taxi<br><em>Lakehouse.</em></h1>
+      <p class="summary">From raw taxi trips to hourly analytics. An incremental data pipeline built with Databricks, PySpark, Auto Loader, and Delta Lake.</p>
+    </section>
+    <section class="metrics" aria-label="Verified run totals">
+      <div><span>Records ingested</span><strong id="bronze">—</strong></div>
+      <div><span>Valid trips</span><strong id="silver">—</strong></div>
+      <div><span>Quarantined records</span><strong id="quarantine">—</strong></div>
+    </section>
+    <section class="panel" aria-labelledby="activity">
+      <div class="panel-head">
+        <div><h2 id="activity">Trips by pickup hour</h2><p>Verified Gold table snapshot · <time id="snapshot-date"></time></p></div>
+        <div class="filter"><label for="borough">Pickup borough</label><select id="borough"><option value="">All boroughs</option></select></div>
+      </div>
+      <p id="selection-summary" class="selection" aria-live="polite"></p>
+      <div class="axis" id="axis" aria-hidden="true"></div>
+      <div class="chart" id="chart" role="group" aria-label="Hourly trip counts"></div>
+      <div class="hours" aria-hidden="true"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>23:00</span></div>
+      <details class="chart-data"><summary>View hourly values</summary><table><thead><tr><th scope="col">Hour</th><th scope="col">Trips</th></tr></thead><tbody id="hourly-values"></tbody></table></details>
+      <p class="note">Boroughs are estimated from ZIP prefixes. The trip counts describe the staged sample.</p>
+      <p id="load-error" role="alert" hidden>The data snapshot could not be loaded.</p>
+    </section>
+    <section class="section" id="pipeline" aria-labelledby="pipeline-title">
+      <h2 id="pipeline-title">Pipeline design</h2>
+      <ol class="flow">
+        <li><span>PARQUET + AUTO LOADER</span><h3>Bronze</h3><p>Track processed files and retain the source path for each record.</p></li>
+        <li><span>PYSPARK VALIDATION</span><h3>Silver</h3><p>Validate timestamps, distance, and fares. Route rejected records to quarantine with a reason.</p></li>
+        <li><span>DELTA AGGREGATES</span><h3>Gold</h3><p>Group valid trips by pickup date, hour, and borough for the dashboard.</p></li>
+      </ol>
+    </section>
+    <section class="section panel" id="verification" aria-labelledby="verification-title">
+      <h2 id="verification-title">What each run proved</h2>
+      <div class="table-scroll"><table>
+        <thead><tr><th scope="col">Update</th><th scope="col">Ingested</th><th scope="col">Valid</th><th scope="col">Quarantined</th></tr></thead>
+        <tbody id="runs"></tbody>
+      </table></div>
+      <p class="note">The replay check covers the same input files. A duplicate trip delivered in a new file is a separate case.</p>
+    </section>
+  </main>
+  <footer class="wrap"><span>Itay Cohen</span><a href="https://github.com/itaycohen5/nyc-taxi-lakehouse">Project repository ↗</a></footer>
+</body>
+</html>
