@@ -59,4 +59,4 @@ The site under `docs/` reads a dated snapshot of the Gold aggregates and the fou
 
 This project was built for Itay Cohen with assistance from Codex. The staging workflow, quarantine rules, reconciliation checks, and public dashboard were developed for this repository. The implementation uses the documented [Lakeflow Python API](https://docs.databricks.com/aws/en/ldp/developer/python-ref) and [Auto Loader](https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/auto-loader/).
 
-The portfolio site’s warm glass panels were inspired by [Glassy Dashboard UI V4 by MatrCode](https://www.youtube.com/shorts/h8v239q6mXs).
+The portfolio site adapts the [Frost Desk](https://github.com/veraetogrex-portfolio/frost-desk/tree/9956b9ad74420fadc5549bc4dba29a73ea82f00c) glass shell, sliding navigation, and animation code. The original copyright and MIT terms are included in [FROST-DESK-LICENSE.txt](docs/FROST-DESK-LICENSE.txt). The dashboard adapts the four views to NYC taxi data and adds responsive layouts, light and dark themes, and reduced motion support.

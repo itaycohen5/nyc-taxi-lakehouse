@@ -1,14 +1,51 @@
+// Page transitions and cancellable tween adapted from Frost Desk (MIT).
+// See FROST-DESK-LICENSE.txt for the original copyright and permission notice.
+const desk = document.querySelector("#desk");
+const content = desk.querySelector(".fd-content");
+const pages = [...desk.querySelectorAll(".fd-page")];
+const nav = desk.querySelector(".fd-nav");
+const navs = [...nav.querySelectorAll("a")];
+const glint = desk.querySelector(".fd-glint");
+const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+const boroughSelect = document.querySelector("#borough");
 const format = new Intl.NumberFormat("en-US");
-const hours = Array.from({ length: 24 }, (_, hour) => hour);
-const boroughSelect = document.getElementById("borough");
+const metrics = ["bronze", "silver", "quarantine"];
 const runLabels = {
-  first: ["Initial load", "Ingested the first 10,000 records."],
-  second: ["New file", "Ingested 10,000 additional records."],
-  "no-op": ["Replay", "Reconciled all layer counts without a new file."],
+  first: ["Initial load", "Loaded the first batch of 10,000 records."],
+  second: ["New file", "Loaded 10,000 additional records."],
+  "no-op": ["Replay", "Processed zero new files. The counts matched the previous run."],
   invalid: ["Invalid trip", "Quarantined the fixture as INVALID_TRIP_TIME."],
 };
 
-const hourLabel = (hour) => `${String(hour).padStart(2, "0")}:00`;
+const ease = {
+  in: t => t ** 3,
+  out: t => 1 - (1 - t) ** 3,
+  io: t => t < .5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2,
+};
+let generation = 0;
+let snapshot;
+let current = 0;
+let busy = false;
+let queued = null;
+
+function tween(ms, draw, easing = ease.io, delay = 0) {
+  if (reducedMotion.matches) {
+    draw(1);
+    return Promise.resolve(true);
+  }
+  return new Promise(done => {
+    const started = performance.now() + delay;
+    const token = generation;
+    const step = now => {
+      if (token !== generation) return done(false);
+      const progress = Math.max(0, Math.min(1, (now - started) / ms));
+      if (now >= started) draw(easing(progress));
+      if (progress < 1) requestAnimationFrame(step);
+      else done(true);
+    };
+    requestAnimationFrame(step);
+  });
+}
 
 function addCell(row, value) {
   const cell = row.insertCell();
@@ -16,68 +53,146 @@ function addCell(row, value) {
   return cell;
 }
 
-function renderChart(rows) {
+function renderChart() {
   const counts = Array(24).fill(0);
-  for (const { hour, borough, trips } of rows) {
+  for (const { hour, borough, trips } of snapshot.hourly) {
     if (!boroughSelect.value || borough === boroughSelect.value) counts[hour] += trips;
   }
-
   const maxTrips = Math.max(...counts, 1);
   const totalTrips = counts.reduce((total, count) => total + count, 0);
-  document.getElementById("axis").textContent = `${format.format(maxTrips)} trips`;
-  document.getElementById("selection-summary").textContent =
-    `${format.format(totalTrips)} trips · ${boroughSelect.value || "All boroughs"}`;
+  document.querySelector("#axis").textContent = `${format.format(maxTrips)} trips`;
+  document.querySelector("#selection-summary").textContent =
+    `${format.format(totalTrips)} trips · ${boroughSelect.selectedOptions[0].textContent}`;
 
-  const bars = document.createDocumentFragment();
-  const values = document.createElement("tbody");
-  values.id = "hourly-values";
-  for (const hour of hours) {
-    const bar = document.createElement("div");
-    bar.className = "bar";
-    bar.style.height = `${(counts[hour] / maxTrips) * 100}%`;
-    bar.style.visibility = counts[hour] === 0 ? "hidden" : "visible";
-    bar.title = `${hourLabel(hour)} · ${format.format(counts[hour])} trips`;
-    bar.setAttribute("aria-hidden", "true");
-    bars.append(bar);
+  const chart = document.querySelector("#chart");
+  const values = document.querySelector("#hourly-values");
+  chart.replaceChildren();
+  values.replaceChildren();
+  counts.forEach((count, hour) => {
+    const label = `${String(hour).padStart(2, "0")}:00`;
+    const bar = document.createElement("i");
+    bar.style.height = `${count / maxTrips * 100}%`;
+    bar.title = `${label} · ${format.format(count)} trips`;
+    chart.append(bar);
+    if (!reducedMotion.matches) bar.animate(
+      [{ transform: "scaleY(0)" }, { transform: "scaleY(1)" }],
+      { duration: 480, delay: hour * 16, easing: "cubic-bezier(.2,.8,.2,1)", fill: "backwards" },
+    );
     const row = values.insertRow();
-    addCell(row, hourLabel(hour));
-    addCell(row, format.format(counts[hour]));
-  }
-  document.getElementById("chart").replaceChildren(bars);
-  document.getElementById("hourly-values").replaceWith(values);
+    addCell(row, label);
+    addCell(row, format.format(count));
+  });
 }
+
+function enter(index) {
+  if (!reducedMotion.matches) pages[index].querySelectorAll(".fd-card, #runs tr").forEach((card, order) => {
+    card.getAnimations().forEach(animation => animation.cancel());
+    card.animate(
+      [{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }],
+      { duration: 420, delay: order * 60, easing: "cubic-bezier(.2,.8,.2,1)", fill: "backwards" },
+    );
+  });
+  if (!snapshot) return;
+  const finalRun = snapshot.runs.at(-1);
+  if (index === 0) {
+    metrics.forEach((metric, order) => {
+      const count = document.getElementById(metric);
+      count.textContent = "0";
+      tween(860, t => { count.textContent = format.format(Math.round(finalRun[metric] * t)); }, ease.out, order * 70);
+    });
+    renderChart();
+  }
+  if (index === 2) {
+    const rate = 100 * finalRun.silver / finalRun.bronze;
+    const label = document.querySelector("#pass-rate");
+    tween(900, t => {
+      const progress = rate * t;
+      label.textContent = `${progress.toFixed(2)}%`;
+      label.parentElement.style.setProperty("--fill", `${progress}%`);
+    }, ease.out);
+  }
+}
+
+function show(index) {
+  pages.forEach((page, position) => {
+    page.hidden = position !== index;
+    page.classList.toggle("is-on", position === index);
+    if (position === index) navs[position].setAttribute("aria-current", "page");
+    else navs[position].removeAttribute("aria-current");
+  });
+  nav.style.setProperty("--page", index);
+  current = index;
+}
+
+async function go(index) {
+  if (busy) {
+    queued = index;
+    return;
+  }
+  if (index === current) return;
+  busy = true;
+  generation++;
+  await tween(290, t => {
+    content.style.filter = `blur(${26 * t}px)`;
+    content.style.opacity = 1 - t;
+    content.style.transform = `scale(${1 - .02 * t})`;
+  }, ease.in);
+
+  show(index);
+  pages[index].querySelector("h1").focus({ preventScroll: true });
+  if (window.scrollY > desk.offsetTop) window.scrollTo(0, desk.offsetTop);
+  enter(index);
+
+  await tween(340, t => {
+    content.style.filter = `blur(${26 * (1 - t)}px)`;
+    content.style.opacity = t;
+    content.style.transform = `scale(${1.02 - .02 * t})`;
+  }, ease.out);
+  content.style.filter = content.style.opacity = content.style.transform = "";
+  glint.classList.remove("is-on");
+  void glint.offsetWidth;
+  glint.classList.add("is-on");
+  busy = false;
+  const next = queued;
+  queued = null;
+  if (next !== null) go(next);
+}
+
+function indexFromHash() {
+  const index = pages.findIndex(page => `#${page.id}` === location.hash);
+  return index < 0 ? 0 : index;
+}
+
+addEventListener("hashchange", () => go(indexFromHash()));
+addEventListener("keydown", event => {
+  if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey ||
+      event.target.matches("input, select, textarea, [contenteditable]")) return;
+  if (/^[1-4]$/.test(event.key)) location.hash = pages[Number(event.key) - 1].id;
+});
+show(indexFromHash());
 
 async function loadSnapshot() {
   const response = await fetch("./snapshot.json");
   if (!response.ok) throw new Error("Snapshot request failed");
-  const { snapshotDate, hourly, runs } = await response.json();
-  const finalRun = runs.at(-1);
-  for (const metric of ["bronze", "silver", "quarantine"]) {
-    document.getElementById(metric).textContent = format.format(finalRun[metric]);
-  }
-  const date = document.getElementById("snapshot-date");
-  date.dateTime = snapshotDate;
-  date.textContent = snapshotDate;
-
-  const history = document.getElementById("runs");
-  for (const run of runs) {
+  snapshot = await response.json();
+  const date = document.querySelector("#snapshot-date");
+  date.dateTime = date.textContent = snapshot.snapshotDate;
+  const history = document.querySelector("#runs");
+  for (const run of snapshot.runs) {
     const row = history.insertRow();
     const [label, description] = runLabels[run.phase];
     const name = addCell(row, label);
     const detail = document.createElement("small");
     detail.textContent = description;
     name.append(detail);
-    for (const metric of ["bronze", "silver", "quarantine"]) {
-      addCell(row, format.format(run[metric]));
-    }
+    metrics.forEach(metric => addCell(row, format.format(run[metric])));
   }
-
-  const boroughs = [...new Set(hourly.map((entry) => entry.borough))].sort();
+  const boroughs = [...new Set(snapshot.hourly.map(entry => entry.borough))].sort();
   for (const borough of boroughs) boroughSelect.add(new Option(borough, borough));
-  boroughSelect.addEventListener("change", () => renderChart(hourly));
-  renderChart(hourly);
+  boroughSelect.addEventListener("change", renderChart);
+  enter(current);
 }
 
 loadSnapshot().catch(() => {
-  document.getElementById("load-error").hidden = false;
+  document.querySelector("#load-error").hidden = false;
 });
