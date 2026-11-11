@@ -6,8 +6,8 @@
   <meta name="description" content="Explore a verified Databricks pipeline for New York City taxi trips.">
   <title>NYC Taxi Lakehouse · Itay Cohen</title>
   <script src="theme.js?v=frost" defer></script>
-  <link rel="stylesheet" href="style.css?v=frost-layout">
-  <script src="app.js?v=frost-layout" defer></script>
+  <link rel="stylesheet" href="style.css?v=chart-axis">
+  <script src="app.js?v=chart-axis" defer></script>
 </head>
 <body>
   <!-- Shell and navigation adapted from Frost Desk. See FROST-DESK-LICENSE.txt. -->
@@ -17,10 +17,10 @@
       <a class="fd-logo" href="#overview" aria-label="NYC Taxi Lakehouse overview">NYC</a>
       <nav class="fd-nav" aria-label="Dashboard sections">
         <span class="fd-pill" aria-hidden="true"></span>
-        <a href="#overview" aria-current="page" aria-label="Overview" title="Overview"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="9" rx="2"/><rect x="13.5" y="3.5" width="7" height="5" rx="2"/><rect x="3.5" y="15.5" width="7" height="5" rx="2"/><rect x="13.5" y="11.5" width="7" height="9" rx="2"/></svg></a>
-        <a href="#pipeline" aria-label="Pipeline" title="Pipeline"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2.5h7a2 2 0 0 1 2 2v8.5a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/></svg></a>
-        <a href="#verification" aria-label="Run history" title="Run history"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19.5h16M5 15l4.5-4.5 3.5 3 6-6.5M15 7h4v4"/></svg></a>
-        <a href="#project" aria-label="Project" title="Project"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.6M12 18.6v2.6M21.2 12h-2.6M5.4 12H2.8M18.5 5.5l-1.8 1.8M7.3 16.7l-1.8 1.8M18.5 18.5l-1.8-1.8M7.3 7.3L5.5 5.5"/></svg></a>
+        <a href="#overview" aria-current="page" aria-label="Overview" title="Overview"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="9" rx="2"/><rect x="13.5" y="3.5" width="7" height="5" rx="2"/><rect x="3.5" y="15.5" width="7" height="5" rx="2"/><rect x="13.5" y="11.5" width="7" height="9" rx="2"/></svg><span aria-hidden="true">Overview</span></a>
+        <a href="#pipeline" aria-label="Pipeline" title="Pipeline"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2.5h7a2 2 0 0 1 2 2v8.5a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/></svg><span aria-hidden="true">Pipeline</span></a>
+        <a href="#verification" aria-label="Run history" title="Run history"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19.5h16M5 15l4.5-4.5 3.5 3 6-6.5M15 7h4v4"/></svg><span aria-hidden="true">Run history</span></a>
+        <a href="#project" aria-label="Project" title="Project"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.6M12 18.6v2.6M21.2 12h-2.6M5.4 12H2.8M18.5 5.5l-1.8 1.8M7.3 16.7l-1.8 1.8M18.5 18.5l-1.8-1.8M7.3 7.3L5.5 5.5"/></svg><span aria-hidden="true">Project</span></a>
       </nav>
       <div class="fd-me" aria-hidden="true">IC</div>
     </aside>
@@ -46,15 +46,21 @@
           <h1 id="title" tabindex="-1">NYC Taxi <em>Lakehouse</em></h1>
           <p class="fd-intro">Explore the output of a Databricks pipeline that loads Parquet files, validates trips, and builds hourly Delta aggregates.</p>
           <div class="fd-grid fd-overview">
-            <article class="fd-card fd-ingested"><h2>Records ingested</h2><strong class="fd-big" id="bronze">—</strong><p>Bronze rows loaded by Auto Loader across all staged files.</p></article>
-            <article class="fd-card fd-activity" aria-labelledby="activity">
+            <article class="fd-card fd-wide fd-ingested"><h2>Records ingested</h2><strong class="fd-big" id="bronze">—</strong><p>Bronze rows loaded by Auto Loader across all staged files.</p></article>
+            <article class="fd-card fd-wide fd-activity" aria-labelledby="activity">
               <div class="fd-card-head">
                 <div><h2 id="activity">Trips by pickup hour</h2><p>Gold sums valid trips across the sampled dates. Exported <time id="snapshot-date"></time>.</p></div>
                 <label class="fd-filter" for="borough">Pickup borough<select id="borough"><option value="">All boroughs</option></select></label>
               </div>
-              <div class="fd-chart-meta"><p id="selection-summary" aria-live="polite"></p><span id="axis" aria-hidden="true"></span></div>
-              <div class="fd-bars" id="chart" aria-hidden="true"></div>
-              <div class="fd-hours" aria-hidden="true"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>23:00</span></div>
+              <div class="fd-chart-meta"><p id="selection-summary" aria-live="polite"></p><span id="hour-detail" aria-live="polite"></span></div>
+              <div class="fd-plot">
+                <div id="axis" class="fd-y-axis" aria-hidden="true"></div>
+                <div class="fd-plot-content">
+                  <div class="fd-guides" id="chart-guides" aria-hidden="true"></div>
+                  <div class="fd-bars" id="chart" role="group" aria-label="Hourly trip counts"></div>
+                  <div class="fd-hours" id="chart-hours" aria-hidden="true"></div>
+                </div>
+              </div>
               <details><summary>View hourly values</summary><table><thead><tr><th scope="col">Hour</th><th scope="col">Trips</th></tr></thead><tbody id="hourly-values"></tbody></table></details>
               <p class="fd-note">Pickup borough is estimated from the ZIP prefix. Unmapped trips appear as Unknown.</p>
             </article>
@@ -103,7 +109,7 @@
           <div class="fd-grid fd-project">
             <article class="fd-card"><h2>Dataset</h2><p>Two 10,000-row batches come from the Databricks NYC taxi sample. One synthetic trip with reversed timestamps tests quarantine.</p><a href="https://docs.databricks.com/aws/en/discover/databricks-datasets#nyctaxi">Databricks sample ↗</a></article>
             <article class="fd-card"><h2>Reproduce the runs</h2><p>The repository includes the staging notebook, pipeline bundle, SQL checks, and the script that reconciles the public snapshot.</p><a href="https://github.com/itaycohen5/nyc-taxi-lakehouse">Repository and setup guide ↗</a></article>
-            <article class="fd-card"><h2>Interface</h2><p>The shell, blur transitions, and animation timing are adapted from Frost Desk. Taxi colors and widgets were built around the pipeline results.</p><a href="https://github.com/veraetogrex-portfolio/frost-desk">Frost Desk ↗</a> · <a href="FROST-DESK-LICENSE.txt">MIT license</a></article>
+            <article class="fd-card"><h2>Interface</h2><p>The shell, blur transitions, and animation timing are adapted from Frost Desk. Taxi colors and widgets were built around the pipeline results.</p><a href="https://github.com/itaycohen5/nyc-taxi-lakehouse">My project repository ↗</a> · <a href="https://github.com/veraetogrex-portfolio/frost-desk">Frost Desk ↗</a> · <a href="FROST-DESK-LICENSE.txt">MIT license</a></article>
           </div>
         </section>
       </main>

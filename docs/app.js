@@ -60,20 +60,55 @@ function renderChart() {
   }
   const maxTrips = Math.max(...counts, 1);
   const totalTrips = counts.reduce((total, count) => total + count, 0);
-  document.querySelector("#axis").textContent = `${format.format(maxTrips)} trips`;
+  const targetStep = Math.max(1, maxTrips / 5);
+  const magnitude = 10 ** Math.floor(Math.log10(targetStep));
+  const step = [1, 2, 2.5, 5, 10].map(value => value * magnitude)
+    .find(value => value >= targetStep && Number.isInteger(value));
+  const top = Math.ceil(maxTrips / step) * step;
+  const axis = document.querySelector("#axis");
+  const guides = document.querySelector("#chart-guides");
+  axis.replaceChildren();
+  guides.replaceChildren();
+  for (let tick = 0; tick <= top; tick += step) {
+    const position = `${tick / top * 100}%`;
+    const label = document.createElement("span");
+    label.style.bottom = position;
+    label.textContent = format.format(tick);
+    axis.append(label);
+    const line = document.createElement("span");
+    line.style.bottom = position;
+    guides.append(line);
+  }
   document.querySelector("#selection-summary").textContent =
     `${format.format(totalTrips)} trips · ${boroughSelect.selectedOptions[0].textContent}`;
 
   const chart = document.querySelector("#chart");
   const values = document.querySelector("#hourly-values");
+  const hours = document.querySelector("#chart-hours");
+  const detail = document.querySelector("#hour-detail");
+  detail.textContent = "Trips per hour";
   chart.replaceChildren();
+  hours.replaceChildren();
   values.replaceChildren();
   counts.forEach((count, hour) => {
     const label = `${String(hour).padStart(2, "0")}:00`;
+    const description = `${label} · ${format.format(count)} trips`;
+    const column = document.createElement("button");
+    column.type = "button";
+    column.className = "fd-column";
+    column.setAttribute("aria-label", description);
+    column.title = description;
+    const showCount = () => { detail.textContent = description; };
+    column.addEventListener("pointerenter", showCount);
+    column.addEventListener("focus", showCount);
+    column.addEventListener("click", showCount);
     const bar = document.createElement("i");
-    bar.style.height = `${count / maxTrips * 100}%`;
-    bar.title = `${label} · ${format.format(count)} trips`;
-    chart.append(bar);
+    bar.style.height = `${count / top * 100}%`;
+    column.append(bar);
+    chart.append(column);
+    const hourTick = document.createElement("span");
+    hourTick.textContent = label.slice(0, 2);
+    hours.append(hourTick);
     if (!reducedMotion.matches) bar.animate(
       [{ transform: "scaleY(0)" }, { transform: "scaleY(1)" }],
       { duration: 480, delay: hour * 16, easing: "cubic-bezier(.2,.8,.2,1)", fill: "backwards" },
