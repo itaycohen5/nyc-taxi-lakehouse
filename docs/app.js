@@ -102,7 +102,30 @@ function enter(index) {
     });
     renderChart();
   }
+  if (index === 1) {
+    pages[index].querySelectorAll("[data-stage]").forEach((ring, order) => {
+      const count = finalRun[ring.dataset.stage];
+      const share = 100 * count / finalRun.bronze;
+      ring.setAttribute("aria-label", `${format.format(count)} records, ${share.toFixed(2)}% of Bronze`);
+      tween(900, t => {
+        ring.querySelector("strong").textContent = format.format(Math.round(count * t));
+        ring.style.setProperty("--fill", `${share * t}%`);
+      }, ease.out, order * 110);
+    });
+  }
   if (index === 2) {
+    const stroke = document.querySelector("#run-stroke");
+    const max = Math.max(...snapshot.runs.map(run => run.bronze));
+    const points = snapshot.runs.map((run, position) => [12 + position * 152, 129 - run.bronze / max * 114]);
+    const path = points.reduce((line, [x, y], position) => {
+      if (!position) return `M${x},${y}`;
+      const [previousX, previousY] = points[position - 1];
+      const midpoint = (previousX + x) / 2;
+      return `${line} C${midpoint},${previousY} ${midpoint},${y} ${x},${y}`;
+    }, "");
+    stroke.setAttribute("d", path);
+    stroke.setAttribute("stroke-dashoffset", "1");
+    tween(900, t => stroke.setAttribute("stroke-dashoffset", 1 - t));
     const rate = 100 * finalRun.silver / finalRun.bronze;
     const label = document.querySelector("#pass-rate");
     tween(900, t => {
@@ -132,7 +155,7 @@ async function go(index) {
   if (index === current) return;
   busy = true;
   generation++;
-  await tween(290, t => {
+  await tween(380, t => {
     content.style.filter = `blur(${26 * t}px)`;
     content.style.opacity = 1 - t;
     content.style.transform = `scale(${1 - .02 * t})`;
@@ -143,7 +166,7 @@ async function go(index) {
   if (window.scrollY > desk.offsetTop) window.scrollTo(0, desk.offsetTop);
   enter(index);
 
-  await tween(340, t => {
+  await tween(380, t => {
     content.style.filter = `blur(${26 * (1 - t)}px)`;
     content.style.opacity = t;
     content.style.transform = `scale(${1.02 - .02 * t})`;

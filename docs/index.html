@@ -6,8 +6,8 @@
   <meta name="description" content="Explore a verified Databricks pipeline for New York City taxi trips.">
   <title>NYC Taxi Lakehouse · Itay Cohen</title>
   <script src="theme.js?v=frost" defer></script>
-  <link rel="stylesheet" href="style.css?v=glass-polish">
-  <script src="app.js?v=frost" defer></script>
+  <link rel="stylesheet" href="style.css?v=frost-layout">
+  <script src="app.js?v=frost-layout" defer></script>
 </head>
 <body>
   <!-- Shell and navigation adapted from Frost Desk. See FROST-DESK-LICENSE.txt. -->
@@ -17,15 +17,15 @@
       <a class="fd-logo" href="#overview" aria-label="NYC Taxi Lakehouse overview">NYC</a>
       <nav class="fd-nav" aria-label="Dashboard sections">
         <span class="fd-pill" aria-hidden="true"></span>
-        <a href="#overview" aria-current="page">Overview</a>
-        <a href="#pipeline">Pipeline</a>
-        <a href="#verification">Run history</a>
-        <a href="#project">Project</a>
+        <a href="#overview" aria-current="page" aria-label="Overview" title="Overview"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="9" rx="2"/><rect x="13.5" y="3.5" width="7" height="5" rx="2"/><rect x="3.5" y="15.5" width="7" height="5" rx="2"/><rect x="13.5" y="11.5" width="7" height="9" rx="2"/></svg></a>
+        <a href="#pipeline" aria-label="Pipeline" title="Pipeline"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2.5h7a2 2 0 0 1 2 2v8.5a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/></svg></a>
+        <a href="#verification" aria-label="Run history" title="Run history"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19.5h16M5 15l4.5-4.5 3.5 3 6-6.5M15 7h4v4"/></svg></a>
+        <a href="#project" aria-label="Project" title="Project"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.6M12 18.6v2.6M21.2 12h-2.6M5.4 12H2.8M18.5 5.5l-1.8 1.8M7.3 16.7l-1.8 1.8M18.5 18.5l-1.8-1.8M7.3 7.3L5.5 5.5"/></svg></a>
       </nav>
+      <div class="fd-me" aria-hidden="true">IC</div>
     </aside>
     <div class="fd-workspace">
       <header class="fd-top">
-        <span>Itay Cohen <span class="fd-top-detail">/ Data engineering</span></span>
         <div class="fd-actions">
           <button id="theme-toggle" class="fd-theme" type="button" aria-label="Dark mode" aria-pressed="true">
             <span class="fd-theme-thumb" aria-hidden="true"></span>
@@ -42,35 +42,37 @@
       <main class="fd-content">
         <p id="load-error" role="alert" hidden>The data snapshot could not be loaded. Reload the page to try again.</p>
         <section class="fd-page is-on" id="overview" aria-labelledby="title">
-          <p class="fd-kick">NYC taxi trips · Databricks</p>
+          <p class="fd-kick">Itay Cohen · Data engineering</p>
           <h1 id="title" tabindex="-1">NYC Taxi <em>Lakehouse</em></h1>
           <p class="fd-intro">Explore the output of a Databricks pipeline that loads Parquet files, validates trips, and builds hourly Delta aggregates.</p>
-          <div class="fd-grid fd-metrics" aria-label="Verified run totals">
-            <article class="fd-card"><h2>Records ingested</h2><strong class="fd-big" id="bronze">—</strong><p>Bronze rows loaded by Auto Loader across all staged files.</p></article>
-            <article class="fd-card"><h2>Valid trips</h2><strong class="fd-big" id="silver">—</strong><p>Trips that passed validation in Silver and contribute to Gold.</p></article>
-            <article class="fd-card"><h2>Quarantined records</h2><strong class="fd-big" id="quarantine">—</strong><p>Rows retained with the first validation rule they failed.</p></article>
+          <div class="fd-grid fd-overview">
+            <article class="fd-card fd-ingested"><h2>Records ingested</h2><strong class="fd-big" id="bronze">—</strong><p>Bronze rows loaded by Auto Loader across all staged files.</p></article>
+            <article class="fd-card fd-activity" aria-labelledby="activity">
+              <div class="fd-card-head">
+                <div><h2 id="activity">Trips by pickup hour</h2><p>Gold sums valid trips across the sampled dates. Exported <time id="snapshot-date"></time>.</p></div>
+                <label class="fd-filter" for="borough">Pickup borough<select id="borough"><option value="">All boroughs</option></select></label>
+              </div>
+              <div class="fd-chart-meta"><p id="selection-summary" aria-live="polite"></p><span id="axis" aria-hidden="true"></span></div>
+              <div class="fd-bars" id="chart" aria-hidden="true"></div>
+              <div class="fd-hours" aria-hidden="true"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>23:00</span></div>
+              <details><summary>View hourly values</summary><table><thead><tr><th scope="col">Hour</th><th scope="col">Trips</th></tr></thead><tbody id="hourly-values"></tbody></table></details>
+              <p class="fd-note">Pickup borough is estimated from the ZIP prefix. Unmapped trips appear as Unknown.</p>
+            </article>
+            <article class="fd-card fd-wide fd-results" aria-label="Validation totals">
+              <div><h2>Valid trips</h2><strong class="fd-mid" id="silver">—</strong><p>Trips that passed Silver validation and contribute to Gold.</p></div>
+              <div><h2>Quarantined records</h2><strong class="fd-mid" id="quarantine">—</strong><p>Rows retained with the first validation rule they failed.</p></div>
+            </article>
           </div>
-          <article class="fd-card fd-activity" aria-labelledby="activity">
-            <div class="fd-card-head">
-              <div><h2 id="activity">Trips by pickup hour</h2><p>Gold sums valid trips across the sampled dates. Exported <time id="snapshot-date"></time>.</p></div>
-              <label class="fd-filter" for="borough">Pickup borough<select id="borough"><option value="">All boroughs</option></select></label>
-            </div>
-            <div class="fd-chart-meta"><p id="selection-summary" aria-live="polite"></p><span id="axis" aria-hidden="true"></span></div>
-            <div class="fd-bars" id="chart" aria-hidden="true"></div>
-            <div class="fd-hours" aria-hidden="true"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>23:00</span></div>
-            <details><summary>View hourly values</summary><table><thead><tr><th scope="col">Hour</th><th scope="col">Trips</th></tr></thead><tbody id="hourly-values"></tbody></table></details>
-            <p class="fd-note">Pickup borough is estimated from the ZIP prefix. Unmapped trips appear as Unknown.</p>
-          </article>
         </section>
         <section class="fd-page" id="pipeline" aria-labelledby="pipeline-title" hidden>
           <p class="fd-kick">Architecture</p>
           <h1 id="pipeline-title" tabindex="-1">From Parquet to <em>Gold</em></h1>
           <p class="fd-intro">Follow a record from a newly landed file to the analytics table or quarantine.</p>
           <div class="fd-grid fd-pipeline">
-            <article class="fd-card"><span class="fd-chip">AUTO LOADER</span><h2>Bronze</h2><p>Read new Parquet files with a fixed schema and keep the source path and ingestion time. The checkpoint tracks processed files across runs.</p></article>
-            <article class="fd-card"><span class="fd-chip">PYSPARK</span><h2>Silver</h2><p>Check pickup and drop-off times, distance, and fare. Join valid rows to a ZIP-prefix lookup and retain unmapped rows as Unknown.</p></article>
-            <article class="fd-card"><span class="fd-chip">DELTA LAKE</span><h2>Gold</h2><p>Group valid trips by date, hour, and borough. The public chart uses an export of these aggregates.</p></article>
-            <article class="fd-card fd-wide"><h2>Quarantine</h2><p>Save rejected rows with their source metadata and first failing rule. This makes failures traceable and keeps those trips out of the published counts.</p><a href="#verification">See the validation runs ↗</a></article>
+            <article class="fd-card"><span class="fd-chip">AUTO LOADER</span><h2>Bronze</h2><div class="fd-ring fd-stage-ring" data-stage="bronze"><strong>—</strong></div><p>Read new Parquet files with a fixed schema and keep the source path and ingestion time. The checkpoint tracks processed files across runs.</p></article>
+            <article class="fd-card"><span class="fd-chip">PYSPARK</span><h2>Silver</h2><div class="fd-ring fd-stage-ring" data-stage="silver"><strong>—</strong></div><p>Check pickup and drop-off times, distance, and fare. Join valid rows to a ZIP-prefix lookup and retain unmapped rows as Unknown.</p></article>
+            <article class="fd-card"><span class="fd-chip">DELTA LAKE</span><h2>Gold</h2><div class="fd-ring fd-stage-ring" data-stage="gold"><strong>—</strong></div><p>Group valid trips by date, hour, and borough. The public chart uses an export of these aggregates.</p></article>
+            <article class="fd-card"><h2>Quarantine</h2><div class="fd-ring fd-stage-ring" data-stage="quarantine"><strong>—</strong></div><p>Save rejected rows with their source metadata and first failing rule. This makes failures traceable and keeps those trips out of the published counts.</p><a href="#verification">See the validation runs ↗</a></article>
           </div>
         </section>
         <section class="fd-page" id="verification" aria-labelledby="verification-title" hidden>
@@ -80,7 +82,12 @@
           <div class="fd-grid fd-reports">
             <article class="fd-card">
               <h2>Verified run history</h2><p>Cumulative totals show how each input changed the pipeline output.</p>
-              <div class="fd-table"><table><thead><tr><th scope="col">Update</th><th scope="col">Ingested</th><th scope="col">Valid</th><th scope="col">Quarantined</th></tr></thead><tbody id="runs"></tbody></table></div>
+              <svg class="fd-run-line" viewBox="0 0 480 146" role="img" aria-label="Cumulative ingested records across the four verification runs">
+                <path class="fd-run-grid" d="M12 15H468M12 53H468M12 91H468M12 129H468"/>
+                <path class="fd-run-stroke" id="run-stroke" pathLength="1" stroke-dasharray="1 1"/>
+              </svg>
+              <div class="fd-run-labels" aria-hidden="true"><span>Initial</span><span>New file</span><span>Replay</span><span>Invalid</span></div>
+              <details><summary>View run counts</summary><div class="fd-table"><table><thead><tr><th scope="col">Update</th><th scope="col">Ingested</th><th scope="col">Valid</th><th scope="col">Quarantined</th></tr></thead><tbody id="runs"></tbody></table></div></details>
             </article>
             <article class="fd-card">
               <h2>Final pass rate</h2><p>Valid Silver rows divided by all ingested Bronze rows, including the injected fixture.</p>
